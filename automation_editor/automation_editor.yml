@@ -5,8 +5,8 @@
 
   vars:
     androidstudio_url: "https://dl.google.com/dl/android/studio/ide-zips/2.2.3.0/android-studio-ide-145.3537739-linux.zip"
-    androidstudio_temp: "/tmp/android_studio_download-145.3537739.zip"
-    androidstudio_install: "/opt/android-studio"
+    androidstudio_temp: "/tmp/android_studio.zip"
+    androidstudio_install: "/opt/androidstudio"
 
   tasks:
     - name: Download system dependencies
@@ -16,6 +16,36 @@
              - unzip
              - ruby-full
              - rubygems-integration
+             - lib32z1
+             - lib32ncurses5
+             - lib32bz2-1.0
+             - lib32stdc++6
+             - xserver-xorg
+             - xserver-xorg-core
+             - xfonts-base
+             - xinit
+             - x11-xserver-utils
+             - xfwm4
+             - xfce4-panel
+             - xfce4-settings
+             - xfce4-session
+             - xfce4-terminal
+             - xfdesktop4
+             - xfce4-taskmanager
+             - thunar
+
+    - name: write .bashrc
+      copy: src=/etc/skel/.bashrc dest=/root/.bashrc owner=root group=root mode=0644
+
+    - name: Update bashrc for xorg autostart
+      lineinfile:
+        dest=/root/.bashrc
+        line="[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx"
+        regexp="^\[\[ -z \$DISPLAY"
+        owner=root
+        state=present
+        insertafter=EOF
+        create=True
 
     - name: Install ruby bundler
       gem: name:bundler state: latest

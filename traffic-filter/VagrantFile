@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # imagen base, ubuntu 14
+  config.vm.box = 'ubuntu/trusty64'
+  # la máquina se basa en la box de ubuntu trusty
+  config.vm.box_url = 'https://vagrantcloud.com/ubuntu/boxes/trusty64/versions/14.04/providers/virtualbox.box'
+  # nombre de la máquina
+  config.vm.hostname = 'filter-vm'
+  # Si corremos en windows
+  if Vagrant::Util::Platform.windows?
+    # Comprobar si el plugin está instalado
+    unless Vagrant.has_plugin?('vagrant-guest_ansible')
+      raise 'vagrant plugin install vagrant-guest_ansible'
+    end
+    config.vm.provision :guest_ansible do |ansible|
+      ansible.playbook = 'traffic_filter.yml'
+    end
+  else
+    config.vm.provision :ansible do |ansible|
+      ansible.playbook = 'traffic_filter.yml'
+    end
+  end
+end

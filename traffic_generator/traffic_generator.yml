@@ -1,0 +1,36 @@
+---
+- hosts: generator-vm
+  connection: local
+    sudo: yes
+
+  vars:
+    genymotion_url: "https://cloud.genymotion.com/genymotion-2.1.0_x64.bin"
+    genymotion_temp: "/tmp/genymotion-2.1.0_x64.bin"
+    genymotion_install: "/opt/genymotion"
+    calabash_url: "https://github.com/cchitsiang/calabash-boilerplate.git"
+    calabash_install: "/opt/calabash"
+    apk_file: "./myapk.apk"
+
+  tasks:
+    - name: Download system dependencies
+      apt: name={{item}} state=installed
+        with_items:
+             - git
+             - unzip
+             - ruby-full
+             - rubygems-integration
+
+    - name: Download Genymotion
+      get_url: url:{{genymotion_url}} dest:{{genymotion_temp}}
+
+    - name: Extract Genymotion
+      unarchive: src:{{genymotion_temp}} dest:{{genymotion_install}}
+
+    - name: Download Calabash
+      git: repo:{{calabash_url}} dest:{{calabash_install}}
+
+    - name: Download Calabash dependencies
+      bundler: state:latest chdir:{{calabash_install}}
+
+    - name: Run Calabash
+      command: calabash-android run {{apk_file}} -p android_default

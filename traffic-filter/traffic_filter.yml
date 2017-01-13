@@ -1,0 +1,29 @@
+---
+- hosts: filter-vm
+  connection: local
+    sudo: yes
+  vars:
+    spark_url: "http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.6.tgz"
+    spark_temp: "/tmp/spark-2.1.0.tgz"
+    spark_install: "/opt/spark-2.1.0"
+    filter_url: "https://github.com/pmverdugo/traffic-filter.git"
+    filter_install: "/opt/traffic-filter"
+
+  tasks:
+  - name: Instala Java
+    apt: name:openjdk-7-jre-headless status:latest
+
+  - name: Descarga Spark
+    get_url: url:"{{spark_url}}" dest="{{spark_temp}}"
+
+  - name: Extract Spark distribution
+    unarchive: src="{{spark_temp}}" dest="{{spark_install}}" copy=no
+
+  - name: Add Java to path
+    lineinfile: dest:$HOME/.bash_profile regexp: '^export JAVA_HOME=' line: 'export JAVA_HOME="/usr/lib/jvm/java-7-openjdk-amd64"'
+
+  - name: Add Spark to path
+    lineinfile: dest:$HOME/.bash_profile regexp: '^export SPARK_HOME=' line: 'export SPARK_HOME="/opt/spark-2.1.0"'
+
+  - name: Download filter
+    git: repo:{{filter_url}} dest:{{filter_install}}

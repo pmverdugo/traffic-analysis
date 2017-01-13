@@ -1,0 +1,27 @@
+---
+- hosts: editor-vm
+  connection: local
+    sudo: yes
+
+  vars:
+    androidstudio_url: "https://dl.google.com/dl/android/studio/ide-zips/2.2.3.0/android-studio-ide-145.3537739-linux.zip"
+    androidstudio_temp: "/tmp/android_studio_download-145.3537739.zip"
+    androidstudio_install: "/opt/android-studio"
+
+  tasks:
+    - name: Download system dependencies
+      apt: name={{item}} state=installed
+        with_items:
+             - git
+             - unzip
+             - ruby-full
+             - rubygems-integration
+
+    - name: Install ruby bundler
+      gem: name:bundler state: latest
+
+    - name: Download Android Studio .zip
+      get_url: url:{{androidstudio_url}} dest:{{androidstudio_temp}}
+
+    - name: Uncompress Android Studio
+      unarchive: src:{{androidstudio_temp}} dest:{{androidstudio_install}}

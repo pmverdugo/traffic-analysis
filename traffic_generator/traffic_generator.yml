@@ -1,7 +1,7 @@
 ---
-- hosts: generator-vm
+- hosts: default
   connection: local
-    sudo: yes
+  become: yes
 
   vars:
     genymotion_url: "https://cloud.genymotion.com/genymotion-2.1.0_x64.bin"

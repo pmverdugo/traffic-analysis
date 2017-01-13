@@ -20,6 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     unless Vagrant.has_plugin?('vagrant-guest_ansible')
       raise 'vagrant plugin install vagrant-guest_ansible'
     end
+    # fix for guest_ansible dependencies
+    config.vm.provision :shell, inline: 'sudo apt-get -y install libffi-dev libssl-dev'
     config.vm.provision :guest_ansible do |ansible|
       ansible.playbook = 'automation_editor.yml'
     end

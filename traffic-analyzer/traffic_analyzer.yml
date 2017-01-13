@@ -1,7 +1,7 @@
 ---
-- hosts: analyzer-vm
+- hosts: default
   connection: local
-    sudo: yes
+  become: yes
   vars:
     spark_url: "http://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.6.tgz"
     spark_temp: "/tmp/spark-2.1.0.tgz"

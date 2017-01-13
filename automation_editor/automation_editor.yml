@@ -1,7 +1,7 @@
 ---
-- hosts: editor-vm
+- hosts: default
   connection: local
-    sudo: yes
+  become: yes
 
   vars:
     androidstudio_url: "https://dl.google.com/dl/android/studio/ide-zips/2.2.3.0/android-studio-ide-145.3537739-linux.zip"
@@ -9,49 +9,49 @@
     androidstudio_install: "/opt/androidstudio"
 
   tasks:
-    - name: Download system dependencies
-      apt: name={{item}} state=installed
-        with_items:
-             - git
-             - unzip
-             - ruby-full
-             - rubygems-integration
-             - lib32z1
-             - lib32ncurses5
-             - lib32bz2-1.0
-             - lib32stdc++6
-             - xserver-xorg
-             - xserver-xorg-core
-             - xfonts-base
-             - xinit
-             - x11-xserver-utils
-             - xfwm4
-             - xfce4-panel
-             - xfce4-settings
-             - xfce4-session
-             - xfce4-terminal
-             - xfdesktop4
-             - xfce4-taskmanager
-             - thunar
+  - name: Download system dependencies
+    apt: name={{item}} state=installed
+    with_items:
+    - git
+    - unzip
+    - ruby-full
+    - rubygems-integration
+    - lib32z1
+    - lib32ncurses5
+    - lib32bz2-1.0
+    - lib32stdc++6
+    - xserver-xorg
+    - xserver-xorg-core
+    - xfonts-base
+    - xinit
+    - x11-xserver-utils
+    - xfwm4
+    - xfce4-panel
+    - xfce4-settings
+    - xfce4-session
+    - xfce4-terminal
+    - xfdesktop4
+    - xfce4-taskmanager
+    - thunar
 
-    - name: write .bashrc
-      copy: src=/etc/skel/.bashrc dest=/root/.bashrc owner=root group=root mode=0644
+  - name: write .bashrc
+    copy: src=/etc/skel/.bashrc dest=/root/.bashrc owner=root group=root mode=0644
 
-    - name: Update bashrc for xorg autostart
-      lineinfile:
-        dest=/root/.bashrc
-        line="[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx"
-        regexp="^\[\[ -z \$DISPLAY"
-        owner=root
-        state=present
-        insertafter=EOF
-        create=True
+  - name: Update bashrc for xorg autostart
+    lineinfile:
+      dest=/root/.bashrc
+      line="[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx"
+      regexp="^\[\[ -z \$DISPLAY"
+      owner=root
+      state=present
+      insertafter=EOF
+      create=yes
 
-    - name: Install ruby bundler
-      gem: name:bundler state: latest
+  - name: Install ruby bundler
+    gem: name=bundler state=latest
 
-    - name: Download Android Studio .zip
-      get_url: url:{{androidstudio_url}} dest:{{androidstudio_temp}}
+  - name: Download Android Studio .zip
+    get_url: url={{androidstudio_url}} dest={{androidstudio_temp}}
 
-    - name: Uncompress Android Studio
-      unarchive: src:{{androidstudio_temp}} dest:{{androidstudio_install}}
+  - name: Uncompress Android Studio
+    unarchive: src={{androidstudio_temp}} dest={{androidstudio_install}}
